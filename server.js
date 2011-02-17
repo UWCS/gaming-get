@@ -17,7 +17,6 @@ var serv = http.createServer( function( req, res ) {
 	}
 
 	else if ( reqName.pathname == '/' ) {
-		console.log( "Home" );
 		home( req, res );
 	}
 
@@ -28,7 +27,6 @@ var serv = http.createServer( function( req, res ) {
 		if ( todo != null ) {		
 			switch ( todo[1] ) {
 				case 'download':
-					console.log( "Downloading" );
 					download( req, res );
 					break;
 				default:
@@ -65,11 +63,11 @@ function home ( req, res ) {
 }
 
 function download( request, response ) {
-	var uri = /\/download(.*)/.exec( url.parse( request.url ).pathname )[1];
-	var filename = path.join( directory, uri );
-	var packagename = /\/(.*)/.exec( uri )[1];
-   
-	exec( "dcs-get install "+packagename, function ( err, stdout, stderr ) {
+	var packagename = /\/download\/([\w-]*)$/.exec( url.parse( request.url ).pathname );
+
+	if ( packagename != null ) {
+	 
+		exec( "dcs-get install "+packagename[1], function ( err, stdout, stderr ) {
 		if ( err ) {
 			response.write( "Unable to install\n" );
 			console.log( err );
@@ -82,16 +80,20 @@ function download( request, response ) {
 		return;
 	});
 
+	}
+
+	else {
+		response.writeHead( 500, {"Content-Type": "text/plain"});
+                response.write( "Invalid Request." );
+                response.end(); 
+	}
 }
 
 function pageNotFound ( req, res ) {
-	console.log( "Lololol" );
 	res.writeHead(500, {'Content-Type': 'text/plain'});
 	res.write('<html>Nooo, my internets! ):</html>');
 	res.end();
 	return;
 }
 	
-
 sys.puts("Server running at http://localhost:8080/");
-
