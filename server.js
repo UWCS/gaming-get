@@ -1,45 +1,33 @@
 var 	sys = require("sys"),
-	http = require("http"),
-    	url = require("url"),
-    	path = require("path"),
-    	fs = require("fs");
-	
+		http = require("http"),
+		url = require("url"),
+		path = require("path"),
+		fs = require("fs");
+
 	exec = require( 'child_process' ).exec;
 
-var directory = "/var/tmp/dcs-get";
+var dcsGetDir = "/var/tmp/dcs-get";
 
 var serv = http.createServer( function( req, res ) {
 
-	var reqName = url.parse( req.url );
-
-	if ( reqName.pathname == "/favicon.ico" ) {
-		return;
-	}
-
-	else if ( reqName.pathname == '/' ) {
-		home( req, res );
-	}
-
-	else { 
-		var todo = /^\/(.*)\//.exec( reqName.pathname );
-		console.log( todo );	
-
-		if ( todo != null ) {		
-			switch ( todo[1] ) {
-				case 'download':
-					download( req, res );
-					break;
-				default:
-					pageNotFound( req, res );
-					break;
-			}
-		}
-
-		else {
+	var reqURL = url.parse( req.url );
+	var request = /^\/?([^\/]*)\/?([^\/]*)/.exec(reqURL.pathname);
+	console.log(request[1] + ", " + request[2]);
+	switch(request[1])
+	{
+		case 'favicon.ico':
+			break;
+		case '':
+			home(req, res);
+			break;
+		case 'download':
+			download(req, res, request[2]);
+			break;
+		default:
 			pageNotFound( req, res );
-			return;
-		}
+			break;
 	}
+	return;
 });
 
 serv.listen(8080);
@@ -48,8 +36,8 @@ serv.listen(8080);
 function home ( req, res ) {
 	res.writeHead( 500, { "Content-Type": "text/plain" } );
 	res.write("Welcome to Gaming-Get Homepage\nYou have installed:\n");
-	var files = fs.readdirSync( directory );
-	var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");	
+	var files = fs.readdirSync( dcsGetDir );
+	var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
 	for ( var i in files ) {
 		if ( ignore.indexOf( files[i] ) == -1 ) {
 			res.write( "\t"+files[i]+"\n" );
@@ -62,12 +50,10 @@ function home ( req, res ) {
 
 }
 
-function download( request, response ) {
-	var packagename = /\/download\/([\w-]*)$/.exec( url.parse( request.url ).pathname );
-
-	if ( packagename != null ) {
+function download( request, response, packageName ) {
+	if ( packageName != null ) {
 	 
-		exec( "dcs-get install "+packagename[1], function ( err, stdout, stderr ) {
+		exec( "dcs-get install "+packageName, function ( err, stdout, stderr ) {
 		if ( err ) {
 			response.write( "Unable to install\n" );
 			console.log( err );
@@ -91,7 +77,7 @@ function download( request, response ) {
 
 function pageNotFound ( req, res ) {
 	res.writeHead(500, {'Content-Type': 'text/plain'});
-	res.write('<html>Nooo, my internets! ):</html>');
+	res.write("404'd!!!");
 	res.end();
 	return;
 }
