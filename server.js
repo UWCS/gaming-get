@@ -36,11 +36,22 @@ serv.listen(8080);
 function home ( req, res ) {
 	res.writeHead( 500, { "Content-Type": "text/plain" } );
 	res.write("Welcome to Gaming-Get Homepage\nYou have installed:\n");
-	var files = fs.readdirSync( dcsGetDir );
-	var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
-	for ( var i in files ) {
-		if ( ignore.indexOf( files[i] ) == -1 ) {
-			res.write( "\t"+files[i]+"\n" );
+	try
+	{
+		var files = fs.readdirSync( dcsGetDir );
+		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
+		for ( var i in files ) {
+			if ( ignore.indexOf( files[i] ) == -1 ) {
+				res.write( "\t"+files[i]+"\n" );
+			}
+		}
+	}
+	catch(err)
+	{
+		if(err.code == 'ENOENT')
+		{
+			console.log(err);
+			res.write("Error: dcs-get not installed\n");
 		}
 	}
 	
