@@ -7,6 +7,7 @@ var 	sys = require("sys"),
 	exec = require( 'child_process' ).exec;
 
 var dcsGetDir = "/var/tmp/dcs-get";
+var packageList;
 
 var serv = http.createServer( function( req, res ) {
 
@@ -32,21 +33,41 @@ var serv = http.createServer( function( req, res ) {
 
 serv.listen(8080);
 
+exec( "dcs-get list", function( err, stdout, stderr ) {
+	if ( err ) {
+		console.log( "Unable to list packages" );
+	}
+	packageList = stdout.split("\n");
+	
+	for ( var i in packageList ) {
+		var temp = /(.*)\ -.*-/.exec( packageList[i] );
+		if ( temp ) {
+			packageList[i] = temp[1];
+		}
+	}
+});
+
 
 function home ( req, res ) {
-	res.writeHead( 500, { "Content-Type": "text/plain" } );
-	res.write("Welcome to Gaming-Get Homepage\nYou have installed:\n");
+	res.writeHead( 500, { "Content-Type": "text/HTML" } );
+	res.write("Welcome to Gaming-Get Homepage<br/>You have installed:<br/>");
 	var files = fs.readdirSync( dcsGetDir );
 	var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
 	for ( var i in files ) {
 		if ( ignore.indexOf( files[i] ) == -1 ) {
-			res.write( "\t"+files[i]+"\n" );
+			res.write( files[i]+"<br/>" );
 		}
 	}
-	
+
+	res.write("<br/>Available packages<br/>");
+	for ( var i in packageList ) {
+		res.write( "<a href=\"http://localhost:8080/download/" + packageList[i] + "/\">" + packageList[i] + "</a><br/>" );
+	}
+
+	//Link on homepage that links to localhost:8080/download/<PACKAGE> with link name <PACKAGE>
+
 	res.end();
 	return;
-	
 
 }
 
