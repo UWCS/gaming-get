@@ -40,9 +40,12 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 	packageList = stdout.split("\n");
 	
 	for ( var i in packageList ) {
-		var temp = /(.*)\ -.*-/.exec( packageList[i] );
+		var temp = /(.*)\ -(.*)-/.exec( packageList[i] );
 		if ( temp ) {
-			packageList[i] = temp[1];
+			var data = {};
+			data.name = temp[1];
+			data.info = temp[2];
+			packageList[i] = data;
 		}
 	}
 });
@@ -61,7 +64,7 @@ function home ( req, res ) {
 
 	res.write("<br/>Available packages<br/>");
 	for ( var i in packageList ) {
-		res.write( "<a href=\"http://localhost:8080/download/" + packageList[i] + "/\">" + packageList[i] + "</a><br/>" );
+		res.write( "<a href=\"http://localhost:8080/download/" + packageList[i].name + "/\" TITLE=\""+ packageList[i].info +"\" \">" + packageList[i].name + "</a><br/>" );
 	}
 
 	//Link on homepage that links to localhost:8080/download/<PACKAGE> with link name <PACKAGE>
