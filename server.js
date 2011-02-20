@@ -95,7 +95,7 @@ function download( request, response, packageName ) {
 			response.end();
 			return;
 		}
-		response.writeHead( 500, {"Content-Type": "text/plain"});
+		response.writeHead( 500, {"Content-Type": "text/HTML"});
 		response.write( stdout );
 		response.end();
 		return;
@@ -104,14 +104,14 @@ function download( request, response, packageName ) {
 	}
 
 	else {
-		response.writeHead( 500, {"Content-Type": "text/plain"});
+		response.writeHead( 500, {"Content-Type": "text/HTML"});
                 response.write( "Invalid Request." );
                 response.end(); 
 	}
 }
 
 function pageNotFound ( req, res ) {
-	res.writeHead(500, {'Content-Type': 'text/plain'});
+	res.writeHead(500, {'Content-Type': 'text/HTML'});
 	res.write("404'd!!!");
 	res.end();
 	return;
