@@ -76,6 +76,7 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
+	res.write('<title>UWCS Gaming</title>');
 	res.write('<link href="static/main.css" rel="stylesheet" type="text/css" />');
 	res.write('<link href="static/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />');
 	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
