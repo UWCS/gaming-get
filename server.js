@@ -76,9 +76,7 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
-	res.write('<title>UWCS Gaming</title>');
-	res.write('<link href="static/main.css" rel="stylesheet" type="text/css" />');
-	res.write('<link href="static/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />');
+	serveStatic( req, res, "header.html" );
 	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
 	try
 	{
@@ -108,6 +106,7 @@ function home(req, res){
 		}
 	}
 
+	serveStatic( req, res, "footer.html" );
 	res.end();
 	return;
 
@@ -117,17 +116,17 @@ function download( request, response, packageName ) {
 	if ( packageName != null ) {
 	 
 		exec( "dcs-get install "+packageName, function ( err, stdout, stderr ) {
-		if ( err ) {
-			response.write( "Unable to install\n" );
-			console.log( err );
+			if ( err ) {
+				response.write( "Unable to install\n" );
+				console.log( err );
+				response.end();
+				return;
+			}
+			response.writeHead( 500, {"Content-Type": "text/HTML"});
+			response.write( stdout );
 			response.end();
 			return;
-		}
-		response.writeHead( 500, {"Content-Type": "text/HTML"});
-		response.write( stdout );
-		response.end();
-		return;
-	});
+		});
 
 	}
 
