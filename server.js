@@ -78,8 +78,8 @@ function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
 	serveStatic( req, res, "header.html" );
 	res.write("<h1>Welcome to gaming-get</h1>");
-	res.write("<div id=\"page\"><div id=\"sidebar\"><ul><li>");
-	res.write("<h2>Installed</h2><ul></ul>");
+	res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
+	res.write("<h2>Installed</h2><ul></ul></li>");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
@@ -90,6 +90,17 @@ function home(req, res){
 			}
 		}
 
+
+		/*<div id="page">
+			<div id="sidebar">
+				<ul>
+					<li>
+					<h2>Foo</h2>
+					
+					</li>
+				</ul>
+			</div>
+			<div id="content">*/
 		res.write("</ul></div><div id=\"content\">");
 
 		res.write("</p><h2>Available packages:</h2>\n");
