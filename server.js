@@ -33,7 +33,7 @@ var serv = http.createServer(function( req, res ){
 	return;
 });
 
-serv.listen(8080);
+serv.listen(9001);
 console.log("Server running at http://localhost:8080/");
 
 exec("dcs-get list", function(err, stdout, stderr){
