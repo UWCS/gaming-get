@@ -35,33 +35,11 @@ var serv = http.createServer(function( req, res ){
 
 serv.listen(port);
 console.log("Server running at http://localhost:"+port+"/");
-
-exec("dcs-get list", function(err, stdout, stderr){
-	if ( err ) {
-		console.log( "Unable to list packages" );
-	}
-	else
-	{
-		packageList = stdout.split("\n");
-		
-		for ( var i in packageList ) {
-			var temp = /(.*)\ -(.*)-/.exec( packageList[i] );
-			if ( temp ) {
-				var data = {};
-				data.name = temp[1];
-				data.info = temp[2];
-				packageList[i] = data;
-			}
-		}
-	}
-});
-
 exec( "dcs-get list", function( err, stdout, stderr ) {
 	if ( err ) {
 		console.log( "Unable to list packages" );
 	}
 	packageList = stdout.split("\n");
-	
 	for ( var i in packageList ) {
 		var temp = /(.*)\ -(.*)-/.exec(packageList[i].trim());
 		if (temp) {
@@ -73,44 +51,55 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 	}
 });
 
-
 function home(req, res){
-	res.writeHead( 500, {"Content-Type": "text/HTML"});
-	serveStatic( req, res, "header.html" );
-		res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
-	res.write("<h2>Installed</h2><ul></ul></li>");
-	try
-	{
-		var files = fs.readdirSync( dcsGetDir );
-		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib", "home");
-		for ( var i in files ) {
-			if ( ignore.indexOf( files[i] ) == -1 ) {
-				res.write( "<li>"+files[i]+"</li>" );
+	var installedList;
+	exec( "dcs-get list-installed", function( err, stdout, stderr ) {
+		if ( err ) {
+			console.log( "Unable to list packages" );
+		}
+		installedList = stdout.split("\n");
+		for ( var i in installedList ) {
+			var temp = /^(.*)-([^-]*)$/.exec(installedList[i]);
+			if (temp) {
+				var data = {};
+				data.name = temp[1];
+				data.info = temp[2];
+				installedList[i] = data;
+			}
+		}
+		try
+		{
+			res.writeHead( 500, {"Content-Type": "text/HTML"});
+			serveStatic( req, res, "header.html" );
+			res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
+			res.write("<h2>Installed</h2><ul></ul></li>");
+			for ( var i in installedList) {
+				res.write('<li><a href="#'+installedList[i].name+'">'+installedList[i].name+'</a></li>');
+			}
+
+			res.write("</ul></div><div id=\"content\">");
+			res.write("<h1>Welcome to gaming-get</h1>");
+			res.write("</p><h2>Available packages:</h2>\n");
+			for ( var i in packageList ) {
+				res.write('<div class="package" id="'+packageList[i].name+'">\n');
+				res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
+				res.write('<span class="title">' + packageList[i].name + '</span>\n');
+				res.write('<span class="info">' + packageList[i].info + '</span>\n');
+				res.write('</div>\n');
+			}
+		}
+		catch(err)
+		{
+			if(err.code == 'ENOENT')
+			{
+				console.log(err);
+				res.write("Error: dcs-get not installed\n");
 			}
 		}
 
-		res.write("</ul></div><div id=\"content\">");
-		res.write("<h1>Welcome to gaming-get</h1>");
-		res.write("</p><h2>Available packages:</h2>\n");
-		for ( var i in packageList ) {
-			res.write('<div class="package">\n');
-			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
-			res.write('<span class="title">' + packageList[i].name + '</span>\n');
-			res.write('<span class="info">' + packageList[i].info + '</span>\n');
-			res.write('</div>\n');
-		}
-	}
-	catch(err)
-	{
-		if(err.code == 'ENOENT')
-		{
-			console.log(err);
-			res.write("Error: dcs-get not installed\n");
-		}
-	}
-
-	serveStatic( req, res, "footer.html" );
-	res.end();
+		serveStatic( req, res, "footer.html" );
+		res.end();
+	});
 	return;
 
 }
