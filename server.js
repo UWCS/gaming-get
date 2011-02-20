@@ -91,7 +91,7 @@ function home(req, res){
 				}
 				else
 				{
-					res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
+					res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" ><img src="static/button.png"></a>\n' );
 				}
 				res.write('<span class="title">' + packageList[i].name + '</span>\n');
 				res.write('<span class="info">' + packageList[i].info + '</span>\n');

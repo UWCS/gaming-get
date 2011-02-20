@@ -606,18 +606,14 @@ pre {
 	font-weight: normal;
 	border-bottom: 2px solid #555555
 }
+
 .package .install
 {
-	background-color: #333;
-	color: #3193FF;
 	display: inline-block;
 	float: right;
-	margin: 5px;
 	padding: 5px;
-	border-color: white;
-	border-style: dotted;
-	border-width: 1px;
 }
+
 .package .launch
 {
 	background-color: #333;
