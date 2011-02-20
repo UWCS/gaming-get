@@ -20,7 +20,7 @@ var serv = http.createServer(function( req, res ){
 			break;
 		case 'static':
 			res.writeHead(200);
-			serveStatic(request[2], res);
+			serveStatic(req, res, request[2]);
 			res.end();
 			break;
 		case 'download':
@@ -145,7 +145,23 @@ function pageNotFound ( req, res ) {
 	return;
 }
 
-function serveStatic(filePath, res) {
-	res.write(fs.readFileSync("./static/"+filePath));
+function serveStatic(req, res, filePath) {
+	try
+	{
+		res.write(fs.readFileSync("./static/"+filePath));
+	}
+	catch(err)
+	{
+		if(err.code == 'EBADF')
+		{
+			pageNotFound(req, res);
+			console.log(err);
+		}
+		else
+		{
+			console.log(err);
+			res.write("ERROR: " + err.code);
+		}
+	}
 	return;
 }
