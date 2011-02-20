@@ -26,6 +26,9 @@ var serv = http.createServer(function( req, res ){
 		case 'download':
 			download(req, res, request[2]);
 			break;
+		case 'launch':
+			launch(req, res, request[2]);
+			break;
 		default:
 			pageNotFound( req, res );
 			break;
@@ -82,7 +85,14 @@ function home(req, res){
 			res.write("</p><h2>Available packages:</h2>\n");
 			for ( var i in packageList ) {
 				res.write('<div class="package" id="'+packageList[i].name+'">\n');
-				res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
+				if(searchName(packageList[i], installedList))
+				{
+					res.write('<a class="launch" href="launch/' + packageList[i].name + '" title="' + packageList[i].info + '" >Launch!</a>\n' );
+				}
+				else
+				{
+					res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
+				}
 				res.write('<span class="title">' + packageList[i].name + '</span>\n');
 				res.write('<span class="info">' + packageList[i].info + '</span>\n');
 				res.write('</div>\n');
@@ -108,6 +118,31 @@ function download( request, response, packageName ) {
 	if ( packageName != null ) {
 	 
 		exec( "dcs-get install "+packageName, function ( err, stdout, stderr ) {
+			if ( err ) {
+				response.write( "Unable to install\n" );
+				console.log( err );
+				response.end();
+				return;
+			}
+			response.writeHead( 500, {"Content-Type": "text/HTML"});
+			response.write( stdout );
+			response.end();
+			return;
+		});
+
+	}
+
+	else {
+		response.writeHead( 500, {"Content-Type": "text/HTML"});
+                response.write( "Invalid Request." );
+                response.end(); 
+	}
+}
+
+function launch( request, response, packageName ) {
+	if ( packageName != null ) {
+	 
+		exec(packageName, function ( err, stdout, stderr ) {
 			if ( err ) {
 				response.write( "Unable to install\n" );
 				console.log( err );
@@ -156,4 +191,16 @@ function serveStatic(req, res, filePath) {
 		}
 	}
 	return;
+}
+
+function searchName(needle, haystack)
+{
+	for(var i in haystack)
+	{
+		if(haystack[i].name == needle.name)
+		{
+			return true;
+		}
+	}
+	return false;
 }
