@@ -7,7 +7,7 @@ var sys = require("sys"),
 exec = require( 'child_process' ).exec;
 
 var dcsGetDir = "/var/tmp/dcs-get";
-var port = 8080;
+var port = 9010;
 
 var serv = http.createServer(function( req, res ){
 	var reqURL = url.parse( req.url );
@@ -77,17 +77,22 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
 	serveStatic( req, res, "header.html" );
-	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
+	res.write("<h1>Welcome to gaming-get</h1>");
+	res.write("<div id=\"page\"><div id=\"sidebar\"><ul><li>");
+	res.write("<h2>Installed</h2><ul></ul>");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
 		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
 		for ( var i in files ) {
 			if ( ignore.indexOf( files[i] ) == -1 ) {
-				res.write( files[i]+"<br/>" );
+				res.write( "<li>"+files[i]+"</li>" );
 			}
 		}
-		res.write("<h2>Available packages:</h2>\n");
+
+		res.write("</ul></div><div id=\"content\">");
+
+		res.write("</p><h2>Available packages:</h2>\n");
 		for ( var i in packageList ) {
 			res.write('<div class="package">\n');
 			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
@@ -95,7 +100,6 @@ function home(req, res){
 			res.write('<span class="info">' + packageList[i].info + '</span>\n');
 			res.write('</div>\n');
 		}
-		res.write('Some tester text <a href="foo/bar/">blah</a>');
 	}
 	catch(err)
 	{
