@@ -77,32 +77,20 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
 	serveStatic( req, res, "header.html" );
-	res.write("<h1>Welcome to gaming-get</h1>");
-	res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
+		res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
 	res.write("<h2>Installed</h2><ul></ul></li>");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
-		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
+		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib", "home");
 		for ( var i in files ) {
 			if ( ignore.indexOf( files[i] ) == -1 ) {
 				res.write( "<li>"+files[i]+"</li>" );
 			}
 		}
 
-
-		/*<div id="page">
-			<div id="sidebar">
-				<ul>
-					<li>
-					<h2>Foo</h2>
-					
-					</li>
-				</ul>
-			</div>
-			<div id="content">*/
 		res.write("</ul></div><div id=\"content\">");
-
+		res.write("<h1>Welcome to gaming-get</h1>");
 		res.write("</p><h2>Available packages:</h2>\n");
 		for ( var i in packageList ) {
 			res.write('<div class="package">\n');
