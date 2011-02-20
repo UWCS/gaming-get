@@ -7,7 +7,7 @@ var sys = require("sys"),
 exec = require( 'child_process' ).exec;
 
 var dcsGetDir = "/var/tmp/dcs-get";
-var packageList;
+var port = 8080;
 
 var serv = http.createServer(function( req, res ){
 	var reqURL = url.parse( req.url );
@@ -33,8 +33,8 @@ var serv = http.createServer(function( req, res ){
 	return;
 });
 
-serv.listen(8080);
-console.log("Server running at http://localhost:8080/");
+serv.listen(port);
+console.log("Server running at http://localhost:"+port+"/");
 
 exec("dcs-get list", function(err, stdout, stderr){
 	if ( err ) {
@@ -92,7 +92,7 @@ function home(req, res){
 		res.write("<h2>Available packages:</h2>");
 		for ( var i in packageList ) {
 			res.write('<div class="package">');
-			res.write('<a class="install" href="http://localhost:8080/download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>' );
+			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>' );
 			res.write('<span class="title">' + packageList[i].name + '</span>');
 			res.write('<span class="info">' + packageList[i].info + '</span>');
 			res.write('</div>');
