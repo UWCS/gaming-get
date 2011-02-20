@@ -78,7 +78,7 @@ function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
 	serveStatic( req, res, "header.html" );
 	res.write("<h1>Welcome to gaming-get</h1>");
-	res.write("You have installed:");
+	res.write("<p>You have installed:");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
@@ -88,7 +88,7 @@ function home(req, res){
 				res.write( files[i]+"<br/>" );
 			}
 		}
-		res.write("<h2>Available packages:</h2>\n");
+		res.write("</p><h2>Available packages:</h2>\n");
 		for ( var i in packageList ) {
 			res.write('<div class="package">\n');
 			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
