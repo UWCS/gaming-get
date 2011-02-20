@@ -15,14 +15,13 @@ var serv = http.createServer(function( req, res ){
 	console.log(request[1] + ", " + request[2]);
 	switch(request[1])
 	{
-		case 'favicon.ico':
-			favicon(req, res);
-			break;
-		case 'main.css':
-			css(req, res);
-			break;
 		case '':
 			home(req, res);
+			break;
+		case 'static':
+			res.writeHead(200);
+			serveStatic(request[2], res);
+			res.end();
 			break;
 		case 'download':
 			download(req, res, request[2]);
@@ -64,8 +63,8 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 	packageList = stdout.split("\n");
 	
 	for ( var i in packageList ) {
-		var temp = /(.*)\ -(.*)-/.exec( packageList[i] );
-		if ( temp ) {
+		var temp = /(.*)\ -(.*)-/.exec(packageList[i].trim());
+		if (temp) {
 			var data = {};
 			data.name = temp[1];
 			data.info = temp[2];
@@ -77,7 +76,8 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
-	res.write('<link href="/main.css" rel="stylesheet" type="text/css" />');
+	res.write('<link href="static/main.css" rel="stylesheet" type="text/css" />');
+	res.write('<link href="static/main.css" rel="shortcut icon" type="image/vnd.microsoft.icon" />');
 	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
 	try
 	{
@@ -93,7 +93,7 @@ function home(req, res){
 			res.write('<div class="package">');
 			res.write('<a class="install" href="http://localhost:8080/download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>' );
 			res.write('<span class="title">' + packageList[i].name + '</span>');
-			res.write('<span class="info">' + packageList[i].name + '</span>');
+			res.write('<span class="info">' + packageList[i].info + '</span>');
 			res.write('</div>');
 		}
 		res.write('Some tester text <a href="foo/bar/">blah</a>');
@@ -145,25 +145,7 @@ function pageNotFound ( req, res ) {
 	return;
 }
 
-function favicon( req, res ) {
-	fs.readFile("favicon.ico", "binary", function(err, file) {  
-		if(err) {
-			res.writeHead(500, {"Content-Type": "text/plain"});
-			res.write(err + "\n");
-			res.end();
-			return;
-		}
-
-		res.writeHead(200);
-		res.write(file, "binary");
-		res.end();
-		return;
-	});
-}
-
-function css( req, res ) {
-	res.writeHead(200);
-	res.write(fs.readFileSync("main.css", 'utf8'));
-	res.end();
+function serveStatic(filePath, res) {
+	res.write(fs.readFileSync("./static/"+filePath));
 	return;
 }
