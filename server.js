@@ -87,13 +87,13 @@ function home(req, res){
 				res.write( files[i]+"<br/>" );
 			}
 		}
-		res.write("<h2>Available packages:</h2>");
+		res.write("<h2>Available packages:</h2>\n");
 		for ( var i in packageList ) {
-			res.write('<div class="package">');
-			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>' );
-			res.write('<span class="title">' + packageList[i].name + '</span>');
-			res.write('<span class="info">' + packageList[i].info + '</span>');
-			res.write('</div>');
+			res.write('<div class="package">\n');
+			res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>\n' );
+			res.write('<span class="title">' + packageList[i].name + '</span>\n');
+			res.write('<span class="info">' + packageList[i].info + '</span>\n');
+			res.write('</div>\n');
 		}
 		res.write('Some tester text <a href="foo/bar/">blah</a>');
 	}
