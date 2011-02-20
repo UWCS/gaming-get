@@ -7,7 +7,7 @@ var sys = require("sys"),
 exec = require( 'child_process' ).exec;
 
 var dcsGetDir = "/var/tmp/dcs-get";
-var port = 8080;
+var port = 9010;
 
 var serv = http.createServer(function( req, res ){
 	var reqURL = url.parse( req.url );
@@ -77,7 +77,8 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 function home(req, res){
 	res.writeHead( 500, {"Content-Type": "text/HTML"});
 	serveStatic( req, res, "header.html" );
-	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
+	res.write("<h1>Welcome to gaming-get</h1>");
+	res.write("You have installed:");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
@@ -95,7 +96,6 @@ function home(req, res){
 			res.write('<span class="info">' + packageList[i].info + '</span>\n');
 			res.write('</div>\n');
 		}
-		res.write('Some tester text <a href="foo/bar/">blah</a>');
 	}
 	catch(err)
 	{
