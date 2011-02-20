@@ -1,21 +1,25 @@
-var 	sys = require("sys"),
-		http = require("http"),
-		url = require("url"),
-		path = require("path"),
-		fs = require("fs");
+var sys = require("sys"),
+	http = require("http"),
+	url = require("url"),
+	path = require("path"),
+	fs = require("fs");
 
-	exec = require( 'child_process' ).exec;
+exec = require( 'child_process' ).exec;
 
 var dcsGetDir = "/var/tmp/dcs-get";
+var packageList;
 
-var serv = http.createServer( function( req, res ) {
-
+var serv = http.createServer(function( req, res ){
 	var reqURL = url.parse( req.url );
 	var request = /^\/?([^\/]*)\/?([^\/]*)/.exec(reqURL.pathname);
 	console.log(request[1] + ", " + request[2]);
 	switch(request[1])
 	{
 		case 'favicon.ico':
+			favicon(req, res);
+			break;
+		case 'main.css':
+			css(req, res);
 			break;
 		case '':
 			home(req, res);
@@ -31,20 +35,51 @@ var serv = http.createServer( function( req, res ) {
 });
 
 serv.listen(8080);
+console.log("Server running at http://localhost:8080/");
+
+exec("dcs-get list", function(err, stdout, stderr){
+	if ( err ) {
+		console.log( "Unable to list packages" );
+	}
+	else
+	{
+		packageList = stdout.split("\n");
+		
+		for ( var i in packageList ) {
+			var temp = /(.*)\ -(.*)-/.exec( packageList[i] );
+			if ( temp ) {
+				var data = {};
+				data.name = temp[1];
+				data.info = temp[2];
+				packageList[i] = data;
+			}
+		}
+	}
+});
 
 
-function home ( req, res ) {
-	res.writeHead( 500, { "Content-Type": "text/plain" } );
-	res.write("Welcome to Gaming-Get Homepage\nYou have installed:\n");
+function home(req, res){
+	res.writeHead( 500, {"Content-Type": "text/HTML"});
+	res.write('<link href="/main.css" rel="stylesheet" type="text/css" />');
+	res.write("Welcome to gaming-get Homepage<br/>You have installed:<br/>");
 	try
 	{
 		var files = fs.readdirSync( dcsGetDir );
 		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
 		for ( var i in files ) {
 			if ( ignore.indexOf( files[i] ) == -1 ) {
-				res.write( "\t"+files[i]+"\n" );
+				res.write( files[i]+"<br/>" );
 			}
 		}
+		res.write("<h2>Available packages:</h2>");
+		for ( var i in packageList ) {
+			res.write('<div class="package">');
+			res.write('<a class="install" href="http://localhost:8080/download/' + packageList[i].name + '" title="' + packageList[i].info + '" >Install</a>' );
+			res.write('<span class="title">' + packageList[i].name + '</span>');
+			res.write('<span class="info">' + packageList[i].name + '</span>');
+			res.write('</div>');
+		}
+		res.write('Some tester text <a href="foo/bar/">blah</a>');
 	}
 	catch(err)
 	{
@@ -54,10 +89,11 @@ function home ( req, res ) {
 			res.write("Error: dcs-get not installed\n");
 		}
 	}
-	
+
+	//Link on homepage that links to localhost:8080/download/<PACKAGE> with link name <PACKAGE>
+
 	res.end();
 	return;
-	
 
 }
 
@@ -71,7 +107,7 @@ function download( request, response, packageName ) {
 			response.end();
 			return;
 		}
-		response.writeHead( 500, {"Content-Type": "text/plain"});
+		response.writeHead( 500, {"Content-Type": "text/HTML"});
 		response.write( stdout );
 		response.end();
 		return;
@@ -80,17 +116,39 @@ function download( request, response, packageName ) {
 	}
 
 	else {
-		response.writeHead( 500, {"Content-Type": "text/plain"});
-                response.write( "Invalid Request." );
-                response.end(); 
+		response.writeHead( 500, {"Content-Type": "text/HTML"});
+		response.write( "Invalid Request." );
+		response.end();
 	}
 }
 
 function pageNotFound ( req, res ) {
-	res.writeHead(500, {'Content-Type': 'text/plain'});
+	console.log("404 trying to get: "+req.url);
+	res.writeHead(500, {'Content-Type': 'text/HTML'});
 	res.write("404'd!!!");
 	res.end();
 	return;
 }
-	
-sys.puts("Server running at http://localhost:8080/");
+
+function favicon( req, res ) {
+	fs.readFile("favicon.ico", "binary", function(err, file) {  
+		if(err) {
+			res.writeHead(500, {"Content-Type": "text/plain"});
+			res.write(err + "\n");
+			res.end();
+			return;
+		}
+
+		res.writeHead(200);
+		res.write(file, "binary");
+		res.end();
+		return;
+	});
+}
+
+function css( req, res ) {
+	res.writeHead(200);
+	res.write(fs.readFileSync("main.css", 'utf8'));
+	res.end();
+	return;
+}

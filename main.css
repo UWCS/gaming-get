@@ -1,0 +1,43 @@
+a {
+	color: #F0BC20;
+}
+body {
+	background-color: black;
+	color: #CCCCCC;
+	font-family: 'Lucida Grande', 'DejaVu Sans', 'Bitstream Vera Sans', Verdana, Arial, sans-serif;
+}
+
+.package
+{
+	margin: 5px;
+	border-color: #333333;
+	border-style: solid;
+	border-width: 1px;
+}
+
+.package .title
+{
+	display: block;
+	font-size: 24px;
+	margin: 10px 5px 10px 10px;
+	font-weight: normal;
+	border-bottom: 2px solid #555555
+}
+.package .install
+{
+	background-color: #333;
+	color: #3193FF;
+	display: inline-block;
+	float: right;
+	margin: 5px;
+	padding: 5px;
+	border-color: white;
+	border-style: dotted;
+	border-width: 1px;
+}
+.package .info
+{
+	display: hidden;
+	display: block;
+	padding: 0 10px 10px 10px;
+}
