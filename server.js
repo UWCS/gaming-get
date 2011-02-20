@@ -54,11 +54,22 @@ exec( "dcs-get list", function( err, stdout, stderr ) {
 function home ( req, res ) {
 	res.writeHead( 500, { "Content-Type": "text/HTML" } );
 	res.write("Welcome to Gaming-Get Homepage<br/>You have installed:<br/>");
-	var files = fs.readdirSync( dcsGetDir );
-	var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
-	for ( var i in files ) {
-		if ( ignore.indexOf( files[i] ) == -1 ) {
-			res.write( files[i]+"<br/>" );
+	try
+	{
+		var files = fs.readdirSync( dcsGetDir );
+		var ignore = new Array( "bin", "cleanup", "downloads", "downloaded", "lib");
+		for ( var i in files ) {
+			if ( ignore.indexOf( files[i] ) == -1 ) {
+				res.write( files[i]+"<br/>" );
+			}
+		}
+	}
+	catch(err)
+	{
+		if(err.code == 'ENOENT')
+		{
+			console.log(err);
+			res.write("Error: dcs-get not installed\n");
 		}
 	}
 
