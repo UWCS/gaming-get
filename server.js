@@ -141,19 +141,28 @@ function download( request, response, packageName ) {
 
 function launch( request, response, packageName ) {
 	if ( packageName != null ) {
-	 
-		exec(packageName, function ( err, stdout, stderr ) {
-			if ( err ) {
-				response.write( "Unable to install\n" );
-				console.log( err );
+		packageName = /^([\w-]*)$/.exec(packageName);
+		if(packageName)
+		{
+			exec(dcsGetDir+"/bin/"+packageName[1], function ( err, stdout, stderr ) {
+				if ( err ) {
+					response.write( "Unable to launch\n" );
+					console.log( err );
+					response.end();
+					return;
+				}
+				response.writeHead( 500, {"Content-Type": "text/HTML"});
+				response.write( stdout );
 				response.end();
 				return;
-			}
-			response.writeHead( 500, {"Content-Type": "text/HTML"});
-			response.write( stdout );
+			});
+		}
+		else
+		{
+			response.write( "Unable to launch\n" );
 			response.end();
 			return;
-		});
+		}
 
 	}
 
