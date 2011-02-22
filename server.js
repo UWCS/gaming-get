@@ -93,7 +93,7 @@ function home(req, res){
 				{
 					res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" ><img src="static/button.png"></a>\n' );
 				}
-				res.write('<span class="title">' + packageList[i].name + '</span>\n');
+				res.write('<span class="title"><a href="#" onclick=\'toggleVisible("'+packageList[i].name+'");return false\' >' + packageList[i].name + '</a></span>\n');
 				res.write('<span class="info">' + packageList[i].info + '</span>\n');
 				res.write('</div>\n');
 			}
@@ -151,11 +151,10 @@ function launch( request, response, packageName ) {
 					response.end();
 					return;
 				}
-				response.writeHead( 500, {"Content-Type": "text/HTML"});
-				response.write( stdout );
-				response.end();
-				return;
 			});
+			response.write("Launched");
+			response.end();
+			return;
 		}
 		else
 		{

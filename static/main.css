@@ -607,6 +607,15 @@ pre {
 	border-bottom: 2px solid #555555
 }
 
+.package .title a {
+	text-decoration: none;
+}
+
+.package .title a:hover
+{
+	color: #46B;
+}
+
 .package .install
 {
 	display: inline-block;
