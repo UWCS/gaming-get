@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<title>UWCS Gaming</title>
+		<link href="static/main.css" rel="stylesheet" type="text/css" />
+		<link href="static/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
+		<script type="text/javascript" src="static/main.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<div id="header">
+				<div id="logo">
+					<img src="static/logo.png" />
+				</div>
+			</div>
+			<div id="page">
+				<div id="sidebar">
+					<ul>
+						<li>
+							<h2>Installed:</h2>
+						</li>
+					</ul>
+				</div>
+				<div id="content">
+					<h1>Welcome to gaming-get</h1>
+					<h2>Available packages:</h2>
+					<% for(var i in packages){ %>
+						<div class="package" id="<%=i%>">
+						<% if(i in installed){ %>
+							<a class="launch" href="lanuch/<%=i%>" title="<%=i%>" >Launch</a>
+						<% }else{%>
+							<a class="install" href="download/<%=i%>" title="<%=i%>" ><img src="static/button.png"></a>
+						<% } %>
+							<span class="title"><a href="#" onclick="toggleVisible('<%=i%>');return false" ><%=i%></a></span>
+							<span class="info"><%=packages[i].description%></span>
+						</div>
+					<% } %>
+				</div>
+				<div id="footer-spacer"></div>
+			</div>
+		</div>
+		<div id="footer">
+			<span>&copy; University of Warwick Computing Society</span>
+		</div>
+	</body>
+</html>

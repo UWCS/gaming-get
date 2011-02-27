@@ -1,7 +1,6 @@
 function toggleVisible(packageName)
 {
 //	$('#'+packageName+' .info:visible').animate({left: '+=200px'}, 'slow');
-	var infoArea = $('#'+packageName+' .info');
 	if($(jq(packageName)+' .info').is(':visible'))
 	{
 		$(jq(packageName)+' .info').slideUp();

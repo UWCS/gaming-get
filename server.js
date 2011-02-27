@@ -1,153 +1,128 @@
-var sys = require("sys"),
-	http = require("http"),
-	url = require("url"),
-	path = require("path"),
-	fs = require("fs");
-
-exec = require( 'child_process' ).exec;
+var http = require('http');
+var fs = require('fs');
+var url = require('url');
+var childProcess = require('child_process');
+var static = require('./lib/static-resource');
+var template = require('./lib/node-template');
 
 var dcsGetDir = "/var/tmp/dcs-get";
+var dcsGetURL = url.parse("http://backus.uwcs.co.uk:80/dcs-get/");
 var port = 9010;
+var packageList = '';
+http.get({
+	host: dcsGetURL.hostname,
+	port: dcsGetURL.port,
+	path: dcsGetURL.pathname+"/packages.json"
+}, function(response){
+	response.setEncoding('utf8');
+	response.on('data',function(data){
+		packageList += data;
+	});
+	response.on('end', function(){
+		packageList = JSON.parse(packageList);
+		server.listen(port);
+		console.log("Server running at http://localhost:"+port+"/");
+	});
+});
 
-var serv = http.createServer(function( req, res ){
-	var reqURL = url.parse( req.url );
-	var request = /^\/?([^\/]*)\/?([^\/]*)/.exec(reqURL.pathname);
-	console.log(request[1] + ", " + request[2]);
-	switch(request[1])
+var installedList = new Object();
+fs.readdir(dcsGetDir, function(err, files){
+	var ignored = Array("bin", "cleanup", "downloads", "downloaded", "lib");
+	for(var i in files)
+	{
+		if(ignored.indexOf(files[i])==-1)
+		{
+			var name = /^(.*)-[\d\.]*$/.exec(files[i]);
+			if(name)
+			{
+				installedList[name[1]] = true;
+			}
+		}
+	}
+});
+
+
+var staticHandler = static.createHandler(fs.realpathSync('./static'));
+
+var server = http.createServer(function(request, response){
+	var path = url.parse(request.url).pathname;
+	var topPath = /^\/?([^\/]*)(\/?[^\/]*)/.exec(path);
+	var tailPath = topPath?topPath[2]:'';
+	topPath = topPath?topPath[1]:'';
+	switch(topPath)
 	{
 		case '':
-			home(req, res);
+			response.writeHead(200,{"Content-Type": "text/HTML"});
+			response.write(template.create("./template/index.tmpl",{
+				packages: packageList,
+				installed: installedList
+			}));
+			response.end();
 			break;
 		case 'static':
-			res.writeHead(200);
-			serveStatic(req, res, request[2]);
-			res.end();
+			if(!staticHandler.handle(tailPath, request, response)){
+				response.writeHead(404);
+				response.write('404');
+				response.end();
+			}
 			break;
 		case 'download':
-			download(req, res, request[2]);
+			download(tailPath, request, response);
 			break;
 		case 'launch':
-			launch(req, res, request[2]);
+			launch(tailPath, request, response);
 			break;
 		default:
-			pageNotFound( req, res );
+			response.writeHead(404);
+			response.write('404');
+			response.end();
 			break;
 	}
-	return;
 });
 
-serv.listen(port);
-console.log("Server running at http://localhost:"+port+"/");
-exec( "dcs-get list", function( err, stdout, stderr ) {
-	if ( err ) {
-		console.log( "Unable to list packages" );
-	}
-	packageList = stdout.split("\n");
-	for ( var i in packageList ) {
-		var temp = /(.*)\ -(.*)-/.exec(packageList[i].trim());
-		if (temp) {
-			var data = {};
-			data.name = temp[1];
-			data.info = temp[2];
-			packageList[i] = data;
-		}
-	}
-});
-
-function home(req, res){
-	var installedList;
-	exec( "dcs-get list-installed", function( err, stdout, stderr ) {
-		if ( err ) {
-			console.log( "Unable to list packages" );
-		}
-		installedList = stdout.split("\n");
-		for ( var i in installedList ) {
-			var temp = /^(.*)-([^-]*)$/.exec(installedList[i]);
-			if (temp) {
-				var data = {};
-				data.name = temp[1];
-				data.info = temp[2];
-				installedList[i] = data;
-			}
-		}
-		try
-		{
-			res.writeHead( 500, {"Content-Type": "text/HTML"});
-			serveStatic( req, res, "header.html" );
-			res.write("<div id=\"page\">\n<div id=\"sidebar\">\n<ul><li>");
-			res.write("<h2>Installed</h2><ul></ul></li>");
-			for ( var i in installedList) {
-				res.write('<li><a href="#'+installedList[i].name+'">'+installedList[i].name+'</a></li>');
-			}
-
-			res.write("</ul></div><div id=\"content\">");
-			res.write("<h1>Welcome to gaming-get</h1>");
-			res.write("</p><h2>Available packages:</h2>\n");
-			for ( var i in packageList ) {
-				res.write('<div class="package" id="'+packageList[i].name+'">\n');
-				if(searchName(packageList[i], installedList))
-				{
-					res.write('<a class="launch" href="launch/' + packageList[i].name + '" title="' + packageList[i].info + '" >Launch!</a>\n' );
-				}
-				else
-				{
-					res.write('<a class="install" href="download/' + packageList[i].name + '" title="' + packageList[i].info + '" ><img src="static/button.png"></a>\n' );
-				}
-				res.write('<span class="title"><a href="#" onclick=\'toggleVisible("'+packageList[i].name+'");return false\' >' + packageList[i].name + '</a></span>\n');
-				res.write('<span class="info">' + packageList[i].info + '</span>\n');
-				res.write('</div>\n');
-			}
-		}
-		catch(err)
-		{
-			if(err.code == 'ENOENT')
-			{
-				console.log(err);
-				res.write("Error: dcs-get not installed\n");
-			}
-		}
-
-		serveStatic( req, res, "footer.html" );
-		res.end();
-	});
-	return;
-
-}
-
-function download( request, response, packageName ) {
-	if ( packageName != null ) {
-	 
-		exec( "dcs-get install "+packageName, function ( err, stdout, stderr ) {
-			if ( err ) {
-				response.write( "Unable to install\n" );
-				console.log( err );
-				response.end();
-				return;
-			}
-			response.writeHead( 500, {"Content-Type": "text/HTML"});
-			response.write( stdout );
-			response.end();
-			return;
-		});
-
-	}
-
-	else {
-		response.writeHead( 500, {"Content-Type": "text/HTML"});
-                response.write( "Invalid Request." );
-                response.end(); 
-	}
-}
-
-function launch( request, response, packageName ) {
-	if ( packageName != null ) {
-		packageName = /^([\w-]*)$/.exec(packageName);
+function download(packageName, request, response){
+	console.log(packageName);
+	if (packageName != null) {
+		packageName = /^\/([\w-]*)$/.exec(packageName);
 		if(packageName)
 		{
-			exec(dcsGetDir+"/bin/"+packageName[1], function ( err, stdout, stderr ) {
-				if ( err ) {
-					response.write( "Unable to launch\n" );
-					console.log( err );
+			childProcess.exec(dcsGetDir+"/bin/dcs-get install "+packageName[1], function(err, stdout, stderr){
+				if (err) {
+					response.write("Unable to install\n");
+					console.log(err);
+					response.end();
+					return;
+				}
+				/*stdout.pipe(process.stdout);
+				stdout.on('data', function(data){
+					//console.log(data);
+					//response.write(data);
+				});
+				stdout.on('end', function(){
+					response.end();
+				});*/
+			});
+			response.write("Installed");
+			response.end();
+			installedList[packageName[1]] = true;
+			return;
+		}
+	}
+	response.writeHead(200,{"Content-Type": "text/HTML"});
+	response.write( "Unable to install\n" );
+	response.end();
+	return;
+}
+
+function launch(packageName, request, response){
+	if ( packageName != null ) {
+		packageName = /^\/([\w-]*)$/.exec(packageName);
+		if(packageName)
+		{
+			childProcess.exec(dcsGetDir+"/bin/"+packageName[1], function(err, stdout, stderr){
+				if (err) {
+					response.write("Unable to launch\n");
+					console.log(err);
 					response.end();
 					return;
 				}
@@ -156,59 +131,9 @@ function launch( request, response, packageName ) {
 			response.end();
 			return;
 		}
-		else
-		{
-			response.write( "Unable to launch\n" );
-			response.end();
-			return;
-		}
-
 	}
-
-	else {
-		response.writeHead( 500, {"Content-Type": "text/HTML"});
-                response.write( "Invalid Request." );
-                response.end(); 
-	}
-}
-
-function pageNotFound ( req, res ) {
-	console.log("404 trying to get: "+req.url);
-	res.writeHead(500, {'Content-Type': 'text/HTML'});
-	res.write("404'd!!!");
-	res.end();
+	response.writeHead(200,{"Content-Type": "text/HTML"});
+	response.write( "Unable to launch\n" );
+	response.end();
 	return;
-}
-
-function serveStatic(req, res, filePath) {
-	try
-	{
-		res.write(fs.readFileSync("./static/"+filePath));
-	}
-	catch(err)
-	{
-		if(err.code == 'EBADF')
-		{
-			pageNotFound(req, res);
-			console.log(err);
-		}
-		else
-		{
-			console.log(err);
-			res.write("ERROR: " + err.code);
-		}
-	}
-	return;
-}
-
-function searchName(needle, haystack)
-{
-	for(var i in haystack)
-	{
-		if(haystack[i].name == needle.name)
-		{
-			return true;
-		}
-	}
-	return false;
 }
