@@ -635,10 +635,16 @@ pre {
 	border-style: dotted;
 	border-width: 1px;
 }
+
 .package .info
 {
-	display: hidden;
 	display: block;
 	padding: 0 10px 10px 10px;
 }
 
+.package .progress
+{
+	display: none;
+	padding: 0;
+	margin: 0;
+}

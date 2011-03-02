@@ -1,14 +1,35 @@
 function toggleVisible(packageName)
 {
-//	$('#'+packageName+' .info:visible').animate({left: '+=200px'}, 'slow');
-	if($(jq(packageName)+' .info').is(':visible'))
+	$(jq(packageName)+' .info').slideToggle();
+	return false;
+}
+
+function install(packageName)
+{
+	var content = $(jq(packageName)+' .progress');
+	if(content.is(':hidden'))
 	{
-		$(jq(packageName)+' .info').slideUp();
+		content.slideDown('slow');
 	}
-	else
-	{
-		$(jq(packageName)+' .info').slideDown();
-	}
+	$.ajax({
+		url: "download/"+packageName,
+		type: "get",
+		dataType: "html",
+		success: function(data){
+			content.html(data);
+			if(!data.match(/Installed/gi))
+			{
+				setTimeout(install(packageName), 200);
+			}
+			else
+			{
+				content.slideUp();
+				$(jq(packageName)+' .install').hide();
+				$(jq(packageName)+' .launch').show();
+			}
+		}
+	});
+	return false;
 }
 
 function jq(myid) {
