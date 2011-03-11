@@ -1,0 +1,6 @@
+[submodule "lib/static-resource"]
+	path = lib/static-resource
+	url = https://github.com/atsuya/static-resource.git
+[submodule "lib/node-template"]
+	path = lib/node-template
+	url = https://github.com/graphnode/node-template.git
