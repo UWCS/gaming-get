@@ -19,6 +19,13 @@
 						<li>
 							<h2>Installed:</h2>
 						</li>
+						<% for(var i in packages){
+							if(packages[i].installed == 1)
+						%>
+							<li>
+								<a href="#<%=i%>" title="<%=i%>"><%=i%></a>
+							</li>
+						<% } %>
 					</ul>
 				</div>
 				<div id="content">
