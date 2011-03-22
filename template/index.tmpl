@@ -41,7 +41,12 @@
 						<% } %>
 							<span class="title"><a href="#" onclick="toggleVisible('<%=i%>');return false" ><%=i%></a></span>
 							<span class="info"><%=packages[i].description%></span>
-							<span class="progress"></span>
+							<span class="progress">
+								<div class="barContainer">
+									<div class="undone"></div>
+									<div class="done"></div>
+								</div>
+							</span>
 						</div>
 					<% } %>
 				</div>

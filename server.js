@@ -27,7 +27,7 @@ http.get({
 			{
 				for(packageVersion in packageList[packageName].version)
 				{
-					if(files.indexOf(packageName+"-"+packageList[packageName].version[packageVersion]) != -1)
+					if(files && files.indexOf(packageName+"-"+packageList[packageName].version[packageVersion]) != -1)
 					{
 						packageList[packageName].installed = 1;
 						break;

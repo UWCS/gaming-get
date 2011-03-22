@@ -6,24 +6,32 @@ function toggleVisible(packageName)
 
 function install(packageName)
 {
-	var content = $(jq(packageName)+' .progress');
-	if(content.is(':hidden'))
+	var holder = $(jq(packageName)+' .progress');
+	var done = $(jq(packageName)+' .progress .barContainer .done');
+	var undone = $(jq(packageName)+' .progress .barContainer .undone');
+	if(holder.is(':hidden'))
 	{
-		content.slideDown('slow');
+		holder.slideDown('slow');
 	}
 	$.ajax({
 		url: "download/"+packageName,
 		type: "get",
 		dataType: "html",
 		success: function(data){
-			content.html(data);
+			done.html(data);
+			undone.html(data);
 			if(!data.match(/Installed/gi))
 			{
+				var match = /(\d*)\%/g.exec(data);
+				if(match!=null)
+				{
+					done.css("width", match[1]+'%');
+				}
 				setTimeout(install(packageName), 200);
 			}
 			else
 			{
-				content.slideUp();
+				holder.slideUp();
 				$(jq(packageName)+' .install').hide();
 				$(jq(packageName)+' .launch').show();
 			}

@@ -647,4 +647,35 @@ pre {
 	display: none;
 	padding: 0;
 	margin: 0;
+	width: 100%;
+}
+
+.package .progress .barContainer
+{
+	border: 2px solid #555;
+	width: 100%;
+	height: 25px;
+}
+
+.package .progress .barContainer .done
+{
+	overflow: hidden;
+	background-color: #F0BC20;
+	color: #46B;
+	border: 0px;
+	white-space: nowrap;
+	width: 0%;
+	height: 25px;
+	line-height: 25px;
+	position: relative;
+	top: -25px;
+}
+
+.package .progress .barContainer .undone
+{
+	overflow: hidden;
+	white-space: nowrap;
+	width: 100%;
+	height: 25px;
+	line-height: 25px;
 }
