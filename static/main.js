@@ -40,6 +40,18 @@ function install(packageName)
 	return false;
 }
 
+function launch(packageName)
+{
+	$.ajax({
+		url: "launch/"+packageName,
+		type: "get",
+		dataType: "html",
+		success: function(data){
+		}
+	});
+	return false;
+}
+
 function jq(myid) {
 	return '#' + myid.replace(/(:|\.)/g,'\\$1');
 }

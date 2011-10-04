@@ -20,7 +20,7 @@
 							<h2>Installed:</h2>
 						</li>
 						<% for(var i in packages){
-							if(packages[i].installed == 1)
+							if(packages[i].type=="game" && packages[i].installed == 1)
 						%>
 							<li>
 								<a href="#<%=i%>" title="<%=i%>"><%=i%></a>
@@ -31,12 +31,13 @@
 				<div id="content">
 					<h1>Welcome to gaming-get</h1>
 					<h2>Available packages:</h2>
-					<% for(var i in packages){ %>
+					<% for(var i in packages){
+						if(packages[i].type == "game") {%>
 						<div class="package" id="<%=i%>">
 						<% if(packages[i].installed == 1){ %>
-							<a class="launch" href="launch/<%=i%>" title="<%=i%>" >Launch</a>
+							<a class="launch" href="#" onclick="launch('<%=i%>');return false" title="<%=i%>" >Launch</a>
 						<% }else{%>
-							<a class="launch" href="launch/<%=i%>" title="<%=i%>" style="display:none" >Launch</a>
+							<a class="launch" href="#" onclick="launch('<%=i%>');return false" title="<%=i%>" style="display:none" >Launch</a>
 							<a class="install" href="#" onclick="install('<%=i%>');return false" title="<%=i%>" ><img src="static/button.png"></a>
 						<% } %>
 							<span class="title"><a href="#" onclick="toggleVisible('<%=i%>');return false" ><%=i%></a></span>
@@ -48,7 +49,7 @@
 								</div>
 							</span>
 						</div>
-					<% } %>
+					<% }} %>
 				</div>
 				<div id="footer-spacer"></div>
 			</div>
