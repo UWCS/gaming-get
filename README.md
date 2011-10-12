@@ -9,7 +9,14 @@ A http server frontend written in Node.js for a dcs-get based game download/play
 ## Todo list
 
 * Download progress bars
+* Saving games
 * User authentication
+
+## Downloading
+
+* To use you must run:
+git submodule init
+git submodule update
 
 ## License
 
