@@ -15,8 +15,10 @@ A http server frontend written in Node.js for a dcs-get based game download/play
 ## Downloading
 
 * To use you must run:
+<pre>
 git submodule init
 git submodule update
+</pre>
 
 ## License
 
