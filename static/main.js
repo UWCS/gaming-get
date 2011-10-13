@@ -34,6 +34,7 @@ function install(packageName)
 				holder.slideUp();
 				$(jq(packageName)+' .install').hide();
 				$(jq(packageName)+' .launch').show();
+				$('#sidebar ul').append('<li><a href="#' + packageName + '">' + packageName + '</a></li>');
 			}
 		}
 	});
@@ -47,6 +48,12 @@ function launch(packageName)
 		type: "get",
 		dataType: "html",
 		success: function(data){
+				$(jq(packageName)+' .launch').hide();
+				$(jq(packageName)+' .launching').show();
+				setTimeout(function(){
+					$(jq(packageName)+' .launching').hide();
+					$(jq(packageName)+' .launch').show();
+				}, 10000);
 		}
 	});
 	return false;

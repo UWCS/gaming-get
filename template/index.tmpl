@@ -36,8 +36,10 @@
 						<div class="package" id="<%=i%>">
 						<% if(packages[i].installed == 1){ %>
 							<a class="launch" href="#" onclick="launch('<%=i%>');return false" title="<%=i%>" >Launch</a>
+							<a class="launching" href="#" title="<%=i%>" style="display:none" >Launching...</a>
 						<% }else{%>
 							<a class="launch" href="#" onclick="launch('<%=i%>');return false" title="<%=i%>" style="display:none" >Launch</a>
+							<a class="launching" href="#" title="<%=i%>" style="display:none" >Launching...</a>
 							<a class="install" href="#" onclick="install('<%=i%>');return false" title="<%=i%>" ><img src="static/button.png"></a>
 						<% } %>
 							<span class="title"><a href="#" onclick="toggleVisible('<%=i%>');return false" ><%=i%></a></span>
