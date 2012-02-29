@@ -59,6 +59,18 @@ function launch(packageName)
 	return false;
 }
 
+function utils(utilName)
+{
+	$.ajax({
+		url: utilName,
+		type: "get",
+		dataType: "html",
+		success: function(data){
+		}
+	});
+	return false;
+}
+
 function jq(myid) {
 	return '#' + myid.replace(/(:|\.)/g,'\\$1');
 }

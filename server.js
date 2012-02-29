@@ -72,6 +72,18 @@ var server = http.createServer(function(request, response){
 		case 'launch':
 			launch(tailPath, request, response);
 			break;
+		case 'ssh':
+			ssh(request, response);
+			break;
+		case 'fixres':
+			fixres(request, response);
+			break;
+		case 'volume':
+			volume(request, response);
+			break;
+		case 'chrome':
+			chrome(request, response);
+			break;
 		default:
 			response.writeHead(404);
 			console.log("404 looking for " + path);
@@ -167,5 +179,54 @@ function launch(packageName, request, response){
 		response.write("Invalid Package: "+packageName+"\n");
 		response.end();
 	}
+	return;
+}
+
+function fixres(request, response){
+	console.log("Fixing resolution");
+	childProcess.exec('xrandr -s 0', function(err, stdout, stderr){
+		if (err) {
+			console.log(err);
+		}
+		response.writeHead(200, {"Content-Type": "text/HTML"});
+		response.write("Fixed.\n");
+		response.end();
+	});
+	return;
+}
+
+function ssh(request, response){
+	console.log("Launching ssh");
+	var sshProc = childProcess.spawn(dcsGetDir+'/gaming-get-0.2/ssh', [], {encoding: 'utf8'});
+	sshProc.stdout.setEncoding('utf8');
+	sshProc.on('exit', function(code){
+		console.log('Exited with code: ' + code);
+	});
+	return;
+}
+
+function volume(request, response){
+	console.log("Launching gnome-volume-control");
+	var volumeProc = childProcess.spawn('gnome-volume-control', ['--page=applications'], {env: {DISPLAY: ':0.0'}, encoding: 'utf8'});
+	volumeProc.stdout.setEncoding('utf8');
+	volumeProc.on('exit', function(code){
+		console.log('Exited with code: ' + code);
+	});
+	return;
+}
+
+function chrome(request, response){
+	console.log("Launching new Chrome window");
+	var chromeProc = childProcess.spawn('google-chrome', ['--incognito'], {env: {DISPLAY: ':0.0'},encoding: 'utf8'});
+	chromeProc.stdout.setEncoding('utf8');
+	chromeProc.on('exit', function(code){
+		console.log('Exited with code: ' + code);
+	});
+	chromeProc.stdout.on('data', function(data){
+		console.log('stdout: ' + data);
+	});
+	chromeProc.stderr.on('data', function(data){
+		console.log('stderr: ' + data);
+	});
 	return;
 }

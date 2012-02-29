@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+export DISPLAY=':0.0'
+
+HOSTNAME="$(zenity --list --radiolist --column "Connect To" --column "Server" TRUE codd.uwcs.co.uk FALSE backus.uwcs.co.uk FALSE arora.uwcs.co.uk FALSE custom --text "Please select the server you wish to ssh to" --height=220)"
+if [ $HOSTNAME == "custom" ];
+then
+    HOSTNAME="$(zenity --entry --text "Please enter the custom hostname to connect to.")"
+fi
+HOSTNAME="$(echo "${HOSTNAME}" | sed -e 's/[^a-zA-Z0-9\._-]//g')"
+
+if [ -z "${HOSTNAME}" ];
+then
+	HOSTNAME="uwcs.co.uk"
+fi
+
+USERNAME="$(zenity --entry --text "Please enter your username:" | sed -e 's/[^a-zA-Z0-9_-]//g')"
+
+if [ $? -eq 0 ];
+then
+	#xrdb -load /dcs/guest/compsoc/.Xdefaults 
+	xterm -e "ssh ${USERNAME}@${HOSTNAME}"
+fi

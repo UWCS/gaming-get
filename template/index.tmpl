@@ -17,6 +17,25 @@
 				<div id="sidebar">
 					<ul>
 						<li>
+							<h2>Utilities:</h2>
+						</li>
+						<!--chrome-->
+						<li>
+							<a href="#" onclick="utils('chrome');return false" title="Launch a new Chrome window">Chrome</a>
+						</li>
+						<!--codd-->
+						<li>
+							<a href="#" onclick="utils('ssh');return false" title="ssh to compsoc's servers or your own.">ssh</a>
+						</li>
+						<!--volume controls-->
+						<li>
+							<a href="#" onclick="utils('volume');return false" title="Volume Controls, headphones needed.">Volume Controls</a>
+						</li>
+						<!--fixres-->
+						<li>
+							<a href="#" onclick="utils('fixres');return false" title="Fix the resolution if a game hasn't returned it to normal.">Fix resolution</a>
+						</li>
+						<li>
 							<h2>Installed:</h2>
 						</li>
 						<% for(var i in packages){
