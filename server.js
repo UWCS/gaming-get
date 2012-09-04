@@ -54,8 +54,19 @@ var server = http.createServer(function(request, response){
 	{
 		case '':
 			response.writeHead(200,{'Content-Type': 'text/HTML'});
+			/* begin fugly sorting of packages */
+			var packageNames = new Array();
+			for(var name in packageList){
+				packageNames.push(name);
+			}
+			packageNames.sort();
+			var sortedPackages = {};
+			for(var name in packageNames){
+				sortedPackages[packageNames[name]] = packageList[packageNames[name]];
+			}
+			/* end fugly sorting of packages */
 			response.write(template.create("./template/index.tmpl",{
-				packages: packageList,
+				packages: sortedPackages,
 			}));
 			response.end();
 			break;
