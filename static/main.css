@@ -142,7 +142,9 @@ html {
 }
 
 #sidebar ul {
+	position: fixed;
 	padding: 10px 0;
+	width: 200px;
 }
 
 #sidebar li {
@@ -382,18 +384,9 @@ input, input, textarea, select{
 	border-bottom: 3px solid #ddd;
 }
 
-#sidebar {
+#sidebar ul {
 	background: #333 url(/static/sidebg.png) repeat-y left;
 	border: 1px solid #444;
-}
-
-#sidebar {
-	float: right;
-	width: 200px;
-	margin-left: 20px;
-	margin-right: 30px;
-	/* Horrific IE6 Hack */
-	-margin-right: 15px;
 }
 
 #sidebar li li a {
@@ -401,12 +394,6 @@ input, input, textarea, select{
 	text-decoration: none;
 	color: #3193FF;
 }
-
-#sidebar .cms {
-	border-top: 1px dotted #bbb;
-	border-bottom: 1px dotted #bbb;
-}
-
 
 /* Search box */
 #top-right input {

@@ -81,6 +81,9 @@ var server = http.createServer(function(request, response){
 		case 'volume':
 			volume(request, response);
 			break;
+		case 'mouse':
+			mouse(request, response);
+			break;
 		case 'chrome':
 			chrome(request, response);
 			break;
@@ -208,6 +211,16 @@ function ssh(request, response){
 function volume(request, response){
 	console.log("Launching gnome-volume-control");
 	var volumeProc = childProcess.spawn('gnome-volume-control', ['--page=applications'], {env: {DISPLAY: ':0.0'}, encoding: 'utf8'});
+	volumeProc.stdout.setEncoding('utf8');
+	volumeProc.on('exit', function(code){
+		console.log('Exited with code: ' + code);
+	});
+	return;
+}
+
+function mouse(request, response){
+	console.log("Launching gnome-mouse-properties");
+	var volumeProc = childProcess.spawn('gnome-mouse-properties', [], {env: {DISPLAY: ':0.0'}, encoding: 'utf8'});
 	volumeProc.stdout.setEncoding('utf8');
 	volumeProc.on('exit', function(code){
 		console.log('Exited with code: ' + code);
