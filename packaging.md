@@ -124,3 +124,15 @@ gaming-get will use the versions prioritising them from top to bottom, if you ha
 * Do not include wine or any other common programs in your game package, these should be packaged seperately and uploaded seperately
 * Ensure that files permissions are appropriate
 * Be sure not to include any of your own account details on games that require them (this sometimes requires deleting config files)
+* If gaming-get is not starting go back and ensure you haven't put any syntatical errors in packages.json
+
+
+# TODO
+There will be more of the guide here, at the moment it's mostly a todo list with a couple of bits that I remembered at the time.
+
+* Compiling wine
+Use oldjoshua
+Apply patches (will include later) including http://zed0.co.uk/Misc/wine-dyn.diff for dynamic port forwarding.
+* 32-bit libs
+* DOSbox game guide
+* Winetricks guide
