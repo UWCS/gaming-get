@@ -11,37 +11,9 @@ var port = 9010;
 var staticHandler = static.createHandler(fs.realpathSync('./static'));
 var packageList = '';
 
-http.get({
-	host: dcsGetURL.hostname,
-	port: dcsGetURL.port,
-	path: dcsGetURL.pathname+"/packages.json"
-}, function(response){
-	response.setEncoding('utf8');
-	response.on('data',function(data){
-		packageList += data;
-	});
-	response.on('end', function(){
-		packageList = JSON.parse(packageList);
-		fs.readdir(dcsGetDir, function(err, files){
-			for(packageName in packageList)
-			{
-				for(packageVersion in packageList[packageName].version)
-				{
-					if(files && files.indexOf(packageName+"-"+packageList[packageName].version[packageVersion]) != -1)
-					{
-						packageList[packageName].installed = 1;
-						break;
-					}
-					else
-					{
-						packageList[packageName].installed = 0;
-					}
-				}
-			}
-		});
+updatePackages(function(){
 		server.listen(port);
 		console.log('Server running at http://localhost:' + port + '/');
-	});
 });
 
 
@@ -82,6 +54,9 @@ var server = http.createServer(function(request, response){
 			break;
 		case 'launch':
 			launch(tailPath, request, response);
+			break;
+		case 'update':
+			update(request, response);
 			break;
 		case 'ssh':
 			ssh(request, response);
@@ -193,6 +168,59 @@ function launch(packageName, request, response){
 		response.write("Invalid Package: "+packageName+"\n");
 		response.end();
 	}
+	return;
+}
+
+function update(request, response){
+	childProcess.exec(dcsGetDir+'/bin/dcs-get update', function(err, stdout, stderr){
+		if (err) {
+			console.log(err);
+		}
+		response.writeHead(200, {"Content-Type": "text/HTML"});
+		response.write("Updated.");
+		updatePackages();
+		response.end();
+	});
+	return;
+}
+
+function updatePackages(callback){
+	console.log('Updating package list');
+	packageList = '';
+	http.get({
+		host: dcsGetURL.hostname,
+		port: dcsGetURL.port,
+		path: dcsGetURL.pathname+"/packages.json"
+	}, function(response){
+		response.setEncoding('utf8');
+		response.on('data',function(data){
+			packageList += data;
+		});
+		response.on('end', function(){
+			packageList = JSON.parse(packageList);
+			fs.readdir(dcsGetDir, function(err, files){
+				for(packageName in packageList)
+				{
+					for(packageVersion in packageList[packageName].version)
+					{
+						if(files && files.indexOf(packageName+"-"+packageList[packageName].version[packageVersion]) != -1)
+						{
+							packageList[packageName].installed = 1;
+							break;
+						}
+						else
+						{
+							packageList[packageName].installed = 0;
+						}
+					}
+				}
+			});
+			if (typeof callback !== 'undefined')
+			{
+				callback();
+			}
+		});
+	});
 	return;
 }
 

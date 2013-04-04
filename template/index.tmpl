@@ -40,6 +40,9 @@
 							<a href="#" onclick="utils('fixres');return false" title="Fix the resolution if a game hasn't returned it to normal.">Fix resolution</a>
 						</li>
 						<li>
+							<a href="#" onclick="utils('update');setTimeout(function(){window.location.reload()},1000);return false" title="Update the package list if there have been recent changes">Update Packages</a>
+						</li>
+						<li>
 							<h2>Installed:</h2>
 						</li>
 						<% for(var i in packages){
