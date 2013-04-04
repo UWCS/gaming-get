@@ -1,0 +1,3 @@
+#!/bin/bash
+cd /var/tmp/dcs-get/gaming-get*
+node server.js
