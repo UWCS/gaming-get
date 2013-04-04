@@ -603,37 +603,38 @@ pre {
 	color: #46B;
 }
 
-.package .install
+.package .button
 {
+	text-decoration: none;
+	width: 90px;
+	text-align: center;
+	background-color: #333;
 	display: inline-block;
 	float: right;
+	margin: 5px;
 	padding: 5px;
+	background-image: -webkit-linear-gradient(top, #666666, #222222);
+	border-radius: 3px;
+}
+.package .button:hover
+{
+	text-decoration: underline;
+}
+
+.package .install
+{
+	color: #F0BC20;
 }
 
 .package .launch
 {
-	background-color: #333;
 	color: #3193FF;
-	display: inline-block;
-	float: right;
-	margin: 5px;
-	padding: 5px;
-	border-color: white;
-	border-style: dotted;
-	border-width: 1px;
 }
 
 .package .launching
 {
-	background-color: #333;
 	color: #3193FF;
-	display: inline-block;
-	float: right;
-	margin: 5px;
-	padding: 5px;
-	border-color: white;
-	border-style: dotted;
-	border-width: 1px;
+	font-weight: bold;
 }
 
 .package .info
