@@ -126,6 +126,58 @@ gaming-get will use the versions prioritising them from top to bottom, if you ha
 * Be sure not to include any of your own account details on games that require them (this sometimes requires deleting config files)
 * If gaming-get is not starting go back and ensure you haven't put any syntatical errors in packages.json
 
+## Packaging Wine based packages
+
+Generally you will want to package the whole wineprefix with your package and then use the wineprefix in the startup script:
+<pre>
+cd /var/tmp/dcs-get/trackmania-1.25
+export WINEPREFIX=/var/tmp/dcs-get/trackmania-1.25/.wine/
+wine-1.4.1 /var/tmp/dcs-get/trackmania-1.25/trackmania.exe
+</pre>
+Doing this means that you don't use up space in the user's actual home directory and allows dlls and other files needed for the game to be put within the wineprefix
+
+## Compiling Wine
+If you want a 64-bit version of wine then just compile it as normal on one of the lab machines, however for most purposes we want a 32-bit version as it is required to run 32-bit programs (i.e. most games).
+Due to DCS not having most of the 32-bit compatibility libraries installed on the machines we need to compile wine on a 32-bit machine (oldjoshua) and then package it from there.
+
+Compilation instructions:
+* ssh to oldjoshua, your DCS username/password should work on it (oldjoshua.dcs.warwick.ac.uk)
+* Install dcs-get, this may involve adjusting the dcs-get script so that it works across ssh:
+<pre>
+if [[ ! -n "$SSH_TTY"  && ! -z "$PS1" ]]
+</pre>
+Should be changed to:
+<pre>
+if [[ ! -z "$PS1" ]]
+</pre>
+* Install the various 32 bit packages required to build wine (note that some of these are not actually required but they generally solve problems later on so it's easier to install them at this point):
+<pre>
+dcs-get install flex.32 gnutls.32 openal-soft.32 oss.32
+</pre>
+* Create a directory to work in within /var/tmp/:
+<pre>
+cd /var/tmp/
+mkdir install
+</pre>
+* Download and untar the version of wine you wish to install from http://sourceforge.net/projects/wine/files/Source/:
+<pre>
+wget http://sourceforge.net/projects/wine/files/Source/wine-1.5.27.tar.bz2/download
+tar xvf wine-1.5.27.tar.bz2
+</pre>
+* Apply Brad's patch which enables dynamic port forwarding:
+<pre>
+wget http://zed0.co.uk/Misc/wine-dyn.diff
+patch wine-1.5.27/dlls/ws2_32/socket.c < wine-dyn.diff
+</pre>
+* Apply any other patches necessary to get whatever game you're working on working
+* Compile wine to the package point you expect, the package name should reflect what patcehs have been applied, i.e. if you had applied patches to make it work with Call of Duty you might call it wine-1.5.27-call-of-duty:
+<pre>
+cd wine-1.5.27
+CPPFLAGS="-I/var/tmp/dcs-get/include/" CFLAGS="-I/var/tmp/dcs-get/include/" LDFLAGS="-L/var/tmp/dcs-get/lib/" ./configure --prefix=/var/tmp/dcs-get/wine-1.5.27 --with-openal
+make -j8 #oldjoshua has 8 cores, might as well use all of them.
+</pre>
+Go do something else while this is compiling as, even with 8 cores, it will generally take an hour or two.
+
 
 # TODO
 There will be more of the guide here, at the moment it's mostly a todo list with a couple of bits that I remembered at the time.
