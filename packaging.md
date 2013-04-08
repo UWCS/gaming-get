@@ -152,7 +152,7 @@ if [[ ! -z "$PS1" ]]
 </pre>
 * Install the various 32 bit packages required to build wine (note that some of these are not actually required but they generally solve problems later on so it's easier to install them at this point):
 <pre>
-dcs-get install flex.32 gnutls.32 openal-soft.32 oss.32
+dcs-get install flex.32 gnutls.32 openal-soft.32 oss.32 gettext.32 mpg123.32 gmp.32 nettle.32
 </pre>
 * Create a directory to work in within /var/tmp/:
 <pre>
@@ -164,20 +164,28 @@ mkdir install
 wget http://sourceforge.net/projects/wine/files/Source/wine-1.5.27.tar.bz2/download
 tar xvf wine-1.5.27.tar.bz2
 </pre>
+Version 1.4.1 is what is used in most places and seems to be relatively stable
 * Apply Brad's patch which enables dynamic port forwarding:
 <pre>
-wget http://zed0.co.uk/Misc/wine-dyn.diff
+wget http://zed0.co.uk/Misc/wine-dyn-zed0.diff
 patch wine-1.5.27/dlls/ws2_32/socket.c < wine-dyn.diff
 </pre>
+Note that this doesn't always apply cleanly and you may have to merge it manually.
+This patch allows you to forward ports that wine is trying to use in your startup script:
+<pre>
+export PORT_UDP_6112=9002
+export PORT_TCP_6112=9002
+</pre>
+Ports in the range 9000 - 9050 are allowed by DCS
 * Apply any other patches necessary to get whatever game you're working on working
 * Compile wine to the package point you expect, the package name should reflect what patcehs have been applied, i.e. if you had applied patches to make it work with Call of Duty you might call it wine-1.5.27-call-of-duty:
 <pre>
 cd wine-1.5.27
-CPPFLAGS="-I/var/tmp/dcs-get/include/" CFLAGS="-I/var/tmp/dcs-get/include/" LDFLAGS="-L/var/tmp/dcs-get/lib/" ./configure --prefix=/var/tmp/dcs-get/wine-1.5.27 --with-openal
+CPPFLAGS="-I/var/tmp/dcs-get/include/" CFLAGS="-I/var/tmp/dcs-get/include/" LDFLAGS="-L/var/tmp/dcs-get/lib/" ./configure --with-x --prefix=/var/tmp/dcs-get/wine-1.5.27 --with-openal
 make -j8 #oldjoshua has 8 cores, might as well use all of them.
+#At this point you probably want to go and get a drink, even with 8 cores it will take half an hour or so
+make install
 </pre>
-Go do something else while this is compiling as, even with 8 cores, it will generally take an hour or two.
-
 
 # TODO
 There will be more of the guide here, at the moment it's mostly a todo list with a couple of bits that I remembered at the time.
