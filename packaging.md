@@ -152,7 +152,7 @@ if [[ ! -z "$PS1" ]]
 </pre>
 * Install the various 32 bit packages required to build wine (note that some of these are not actually required but they generally solve problems later on so it's easier to install them at this point):
 <pre>
-dcs-get install flex.32 gnutls.32 openal-soft.32 oss.32 gettext.32 mpg123.32 gmp.32 nettle.32
+dcs-get install flex.32 gnutls.32 openal-soft.32 oss.32 gettext.32 mpg123.32 gmp.32 nettle.32 gsm.32
 </pre>
 * Create a directory to work in within /var/tmp/:
 <pre>
