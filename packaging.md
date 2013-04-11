@@ -167,7 +167,7 @@ tar xvf wine-1.5.27.tar.bz2
 Version 1.4.1 is what is used in most places and seems to be relatively stable
 * Apply Brad's patch which enables dynamic port forwarding:
 <pre>
-wget http://zed0.co.uk/Misc/wine-dyn-zed0.diff
+wget http://zed0.co.uk/Misc/wine-dyn-zed0-3.diff
 patch wine-1.5.27/dlls/ws2_32/socket.c < wine-dyn.diff
 </pre>
 Note that this doesn't always apply cleanly and you may have to merge it manually.
