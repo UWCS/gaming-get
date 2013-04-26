@@ -239,7 +239,7 @@ function fixres(request, response){
 
 function ssh(request, response){
 	console.log("Launching ssh");
-	var sshProc = childProcess.spawn(dcsGetDir+'/gaming-get-0.2/ssh', [], {encoding: 'utf8'});
+	var sshProc = childProcess.spawn(dcsGetDir+'/gaming-get-0.3/ssh', [], {encoding: 'utf8'});
 	sshProc.stdout.setEncoding('utf8');
 	sshProc.on('exit', function(code){
 		console.log('Exited with code: ' + code);
