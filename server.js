@@ -7,7 +7,7 @@ var template = require('./lib/node-template');
 
 var dcsGetDir = "/var/tmp/dcs-get";
 var dcsGetURL = url.parse("http://backus.uwcs.co.uk:80/dcs-get/");
-var port = 9011;
+var port = 9010;
 var staticHandler = static.createHandler(fs.realpathSync('./static'));
 var packageList = '';
 
