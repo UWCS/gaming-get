@@ -7,7 +7,7 @@ var template = require('./lib/node-template');
 
 var dcsGetDir = "/var/tmp/dcs-get";
 var dcsGetURL = url.parse("http://backus.uwcs.co.uk:80/dcs-get/");
-var port = 9010;
+var port = 9011;
 var staticHandler = static.createHandler(fs.realpathSync('./static'));
 var packageList = '';
 
@@ -35,7 +35,7 @@ var server = http.createServer(function(request, response){
 			var sortedPackages = {};
 			for(var name in packageNames){
 				sortedPackages[packageNames[name]] = packageList[packageNames[name]];
-			}
+			}!
 			/* end fugly sorting of packages */
 			response.write(template.create("./template/index.tmpl",{
 				packages: sortedPackages,
@@ -73,6 +73,9 @@ var server = http.createServer(function(request, response){
 		case 'chrome':
 			chrome(request, response);
 			break;
+		case 'mousesens':
+			mousesens(request,response);
+			break;
 		default:
 			response.writeHead(404);
 			console.log("404 looking for " + path);
@@ -106,7 +109,7 @@ function download(packageName, request, response){
 				response.write("Installing...\n");
 				response.end();
 				break;
-			//installed
+			//installed!
 			case 1:
 				response.writeHead(200, {"Content-Type": "text/HTML"});
 				response.write("Installed\n");
@@ -114,7 +117,7 @@ function download(packageName, request, response){
 				break;
 			//currently installing
 			case 2:
-				response.writeHead(200, {"Content-Type": "text/HTML"});
+				response.writeHead(200, {"Content-Type": "text/HTML"});!
 				response.write("Currently installing: " + packageList[packageName].installProgress + "%\n");
 				response.end();
 				break;
@@ -145,7 +148,7 @@ function launch(packageName, request, response){
 				response.writeHead(200, {"Content-Type": "text/HTML"});
 				response.write("Launching...\n");
 				response.end();
-				console.log("Launching " + dcsGetDir + "/bin/" + packageName);
+				console.log("Launching " + dcsGetDir + "/bin/" + packageName);!
 				childProcess.exec(dcsGetDir+"/bin/"+packageName, function(err, stdout, stderr){
 					if (err) {
 						console.log(err);
@@ -164,7 +167,7 @@ function launch(packageName, request, response){
 	}
 	else
 	{
-		response.writeHead(200, {"Content-Type": "text/HTML"});
+		response.writeHead(200, {"Content-Type": "text/HTML"});!
 		response.write("Invalid Package: "+packageName+"\n");
 		response.end();
 	}
@@ -224,7 +227,7 @@ function updatePackages(callback){
 	return;
 }
 
-function fixres(request, response){
+function fixres(request, response){!
 	console.log("Fixing resolution");
 	childProcess.exec('xrandr -s 0', function(err, stdout, stderr){
 		if (err) {
@@ -263,6 +266,17 @@ function mouse(request, response){
 	volumeProc.stdout.setEncoding('utf8');
 	volumeProc.on('exit', function(code){
 		console.log('Exited with code: ' + code);
+	});
+	return;
+}
+
+function mousesens(request,response){
+	console.log("Launching mouse-sensitivity");
+	childProcess.exec('xterm -e ./mouse-sens',function(err,stdout,stderr){
+		if(err) {
+			console.log(err);
+		}
+		response.end();
 	});
 	return;
 }
