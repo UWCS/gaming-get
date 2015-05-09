@@ -73,6 +73,9 @@ var server = http.createServer(function(request, response){
 		case 'chrome':
 			chrome(request, response);
 			break;
+		case 'mousesens':
+			mousesens(request,response);
+			break;
 		default:
 			response.writeHead(404);
 			console.log("404 looking for " + path);
@@ -263,6 +266,17 @@ function mouse(request, response){
 	volumeProc.stdout.setEncoding('utf8');
 	volumeProc.on('exit', function(code){
 		console.log('Exited with code: ' + code);
+	});
+	return;
+}
+
+function mousesens(request,response){
+	console.log("Launching mouse-sensitivity");
+	childProcess.exec('xterm -e ./mouse-sens',function(err,stdout,stderr){
+		if(err) {
+			console.log(err);
+		}
+		response.end();
 	});
 	return;
 }

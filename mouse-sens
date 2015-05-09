@@ -1,0 +1,9 @@
+#!/bin/bash
+xinput --list --short
+echo "Choose ID of your mouse (ex: Microsoft 3 Button Mouse with intelli-eye ID=(the id you want to write in)"
+read -r id
+echo "Choose sensitivity (ex: 3 is 3x slower, 0.5 is 2x faster)"
+read -r decel
+echo "Changing.."
+xinput --set-prop $id "Device Accel Constant Deceleration" $decel
+exit 0
